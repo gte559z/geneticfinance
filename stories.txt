@@ -1,0 +1,7 @@
++basepair generatory     2       +
++genome generator        5       +
++Create sample data generator    3   +
+Research state changes (once your in a state, there is a probabiliyt of transitioning out)  4   
+What is the difference between constructor functions with 'this' or the Dojo return object?
+
+

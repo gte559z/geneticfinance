@@ -1,0 +1,56 @@
+<document>
+    <header>
+        <script src="js/genome/GenomeGenerator.js"></script>
+        <script src="js/genome/BasePair.js"></script>
+        <script src="js/markov/MarkovChain.js"></script>
+        <script src="js/markov/State.js"></script>
+        <script src="js/sampledatageneration/DataFormatUtils.js"></script>
+        <script src="js/sampledatageneration/SampleData.js"></script>
+        <script src="js/segmentanalysis/SegmentAnalysis.js"></script>
+        <script src="js/dataquery/StockDataQueryUtilities.js"></script>
+    
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <LINK href="css/default.css" rel="stylesheet" type="text/css">
+    </header>
+    
+    <body>
+        <div id="chart_div" style="width: 900px; height: 500px;"></div>
+        <script>
+        
+            var exampleData = 'http://www.quandl.com/api/v1/datasets/WIKI/AAPL.json?sort_order=asc&exclude_headers=false&trim_start=2010-11-01&trim_end=2013-11-30&column=4&collapse=daily';
+        
+            $.get(exampleData, function(){
+            }).done(function(data){
+               console.log(data); 
+            });
+        
+            google.load("visualization", "1", {
+                packages: ["corechart"]
+            });
+
+            google.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                // Generate a random genome, and format for Google Data Table
+                var numberOfDataPoints = 2000;
+                var genome = acl.utilities.generateGenome(numberOfDataPoints);
+                var rawData = acl.dataformat.convertGenomeSequenceToDataArray(genome);
+
+                var markovChainData = acl.utilities.generateThreeStateRandomMarkovChainData(numberOfDataPoints);
+                var maximalSegments = acl.SegmentAnalysis.getMaximalSegments(markovChainData);
+                var dataFormattedForGoogleApi = acl.dataformat.convertToGoogleFormat(
+                markovChainData, rawData);
+
+                var googleDataTable = google.visualization.arrayToDataTable(dataFormattedForGoogleApi);
+
+                var options = {
+                    title: 'Company Performance'
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+                chart.draw(googleDataTable, options);
+            };
+        </script>
+    </body>
+</document>
